@@ -28,6 +28,23 @@ def unauthorize():
 
 	return response, 401
 
+@auth_token.verify_password
+def verify_auth_token(token, unused_password):
+	g.user = User.verify_auth_token(token)
+
+	return g.user is not None
+
+
+@auth_token.error_handler
+@json
+def unauthorized_token():
+	response = {
+		'status': 401,
+		'error': 'unauthorized',
+		'message': 'please send your authentication token'
+	}
+
+	return response, 401
 
 @app.route('/email/login')
 @auth.login_required
