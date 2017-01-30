@@ -24,7 +24,9 @@ def client():
 	user.set_password_hash('123456')
 	db.session.add(user)
 	db.session.commit()
+
 	yield test_client
+	
 	"""
 		tearDown code
 	"""
