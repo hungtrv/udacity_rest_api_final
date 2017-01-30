@@ -1,7 +1,7 @@
-from flask import jsonify
 from flask import g
 
 from main import app
+from main.controllers.v1 import api
 from main import auth
 from main import auth_token
 
@@ -9,6 +9,9 @@ from main.models.users import User
 
 from main.decorators import json
 
+"""
+	auth: HTTP Authentication used with main app for login, logout, authentication token
+"""
 @auth.verify_password
 def verify_password(username, password):
 	g.user = User.query.filter_by(username=username).first()
@@ -28,6 +31,9 @@ def unauthorize():
 
 	return response, 401
 
+"""
+	auth_token: HTTP Authentication used with API endpoints
+"""
 @auth_token.verify_password
 def verify_auth_token(token, unused_password):
 	g.user = User.verify_auth_token(token)
@@ -46,6 +52,7 @@ def unauthorized_token():
 
 	return response, 401
 
+
 @app.route('/email/login')
 @auth.login_required
 @json
@@ -58,3 +65,8 @@ def email_login():
 def email_logout():
 	# Need to work on how to invalidate a token
 	return {}
+
+@api.before_request
+@auth_token.login_required
+def before_request():
+	pass
