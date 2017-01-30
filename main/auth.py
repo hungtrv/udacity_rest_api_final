@@ -9,6 +9,8 @@ from main.models.users import User
 
 from main.decorators import json
 from main.decorators import rate_limit
+from main.decorators import no_cache
+from main.decorators import etag
 
 """
 	auth: HTTP Authentication used with main app for login, logout, authentication token
@@ -55,8 +57,9 @@ def unauthorized_token():
 
 
 @app.route('/email/login')
-@rate_limit(limit=1, period=600) # Only allow 1 call within 600 second
 @auth.login_required
+@rate_limit(limit=1, period=600) # Only allow 1 call within 600 second
+@no_cache
 @json
 def email_login():
 	return {'token': g.user.generate_auth_token()}
@@ -69,7 +72,13 @@ def email_logout():
 	return {}
 
 @api.before_request
-@rate_limit(limit=5, period=15) # Only allow 5 requests within 15 seconds
 @auth_token.login_required
+@rate_limit(limit=5, period=15) # Only allow 5 requests within 15 seconds
 def before_request():
 	pass
+
+
+@api.after_request
+@etag
+def after_request(rv):
+	return rv
