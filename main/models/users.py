@@ -1,5 +1,7 @@
 from flask import current_app
+from flask import url_for
 from main import db
+from main.errors import ValidationError
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -26,6 +28,40 @@ class User(db.Model):
 		s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
 		return s.dumps({'id': self.id}).decode('utf-8')
 
+
+	def get_url(self):
+		return url_for('api.get_user', id=self.id, _external=True)
+
+
+	def export_data(self):
+		return {
+			'self_url': self.get_url(),
+			'username': self.username,
+			'email': self.email,
+			'photo_url': self.photo_url
+		}
+
+	def import_data(self, data):
+		try:
+			self.username = data['username']
+			self.email = data['email']
+			self.photo_url = data['photo_url']
+			self.set_password_hash(data['password'])
+		except KeyError as e:
+			raise ValidationError('Invalid user: missing ' + e.args[0])
+
+		return self
+
+	def update_data(self, data):
+		fields = ['username', 'email', 'photo_url']
+		for field in fields:
+			if field in data:
+				setattr(self, field, data[field])
+
+		if 'password' in data:
+			self.set_password_hash(data['password'])
+		
+		return self
 
 	@staticmethod
 	def verify_auth_token(token):

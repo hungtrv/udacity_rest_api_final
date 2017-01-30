@@ -1,5 +1,6 @@
 __all__ = [
-	'index'
+	'index',
+	'users'
 ]
 
 from flask import Blueprint
