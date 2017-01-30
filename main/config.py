@@ -11,6 +11,7 @@ class _Config(object):
 
 class _TestConfig(_Config):
 	SQLALCHEMY_DATABASE_URI = "sqlite:///" + test_db_dir
+	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	TESTING = True
 
 class _DevelopmentConfig(_Config):
