@@ -1,6 +1,6 @@
-# import coverage
-# COV = coverage.coverage(branch=True, include='main*')
-# COV.start()
+import coverage
+COV = coverage.coverage(branch=True, include='main*')
+COV.start()
 
 from werkzeug.exceptions import NotFound
 import unittest
@@ -111,5 +111,5 @@ class TestAPI(unittest.TestCase):
 if __name__ == "__main__":
 	suite = unittest.TestLoader().loadTestsFromTestCase(TestAPI)
 	unittest.TextTestRunner(verbosity=2).run(suite)
-	# COV.stop()
-	# COV.report()
+	COV.stop()
+	COV.report()
