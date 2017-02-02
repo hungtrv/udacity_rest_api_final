@@ -1,5 +1,13 @@
 from . import api
+from main.decorators import json
 
 @api.route('/')
+@json
 def index():
-	return "<H1>Meat N' Eat Version 1.0</H1>"
+	response = {
+		'status': 200,
+		'error': 'Not Found',
+		'message': 'Welcome to Meet N Eat!'
+	}
+
+	return response
