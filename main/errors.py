@@ -1,9 +1,6 @@
 from main import app
 from main.decorators import json
 
-from flask import jsonify
-
-
 
 class ValidationError(ValueError):
     pass

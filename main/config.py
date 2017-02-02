@@ -7,6 +7,8 @@ test_db_dir = os.path.join(base_dir, '../db/api_test_db.sqlite')
 class _Config(object):
 	SQLALCHEMY_DATABASE_URI = "sqlite:///" + db_dir
 	SECRET_KEY = "CaptainGutt!"
+	GOOGLE_OAUTH2_CLIENT_ID = '1008302442818-1bmf9b3q0f8oaomban7dj9q4qlgalu35.apps.googleusercontent.com'
+	GOOGLE_OAUTH2_CLIENT_SECRET = 'MK_-nRMrx49vBjxLUM1_aKik'
 	TESTING = False
 
 class _TestConfig(_Config):
