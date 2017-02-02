@@ -122,16 +122,16 @@ def google_login():
 			'password': os.urandom(24)
 		}
 
-		g.user = User.query.filter_by(username=user_data['username']).first()
+		tmp_user = User.query.filter_by(username=user_data['username']).first()
 		
-		if g.user is None:
+		if tmp_user is None:
 			new_user = User()
 			new_user.import_data(user_data)
 			db.session.add(new_user)
 			db.session.commit()
-			g.user = new_user
+			tmp_user = new_user
 
-		return jsonify({'token': g.user.generate_auth_token()})
+		return jsonify({'token': tmp_user.generate_auth_token()})
 
 	else:
 		response = jsonify({
