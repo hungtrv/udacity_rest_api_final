@@ -6,9 +6,10 @@ from flask import g
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_httpauth import HTTPBasicAuth
+
 from main.config import config
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.config.from_object(config)
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.DEBUG)
