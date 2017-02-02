@@ -25,7 +25,7 @@ API_VERSION = '/v1'
 app.config.from_object(config)
 
 
-class TestAPI(unittest.TestCase):
+class TestUsersAPI(unittest.TestCase):
 	default_username = 'hungtrv'
 	default_password = '123456'
 
@@ -46,6 +46,12 @@ class TestAPI(unittest.TestCase):
 		db.session.remove()
 		db.drop_all()
 		self.ctx.pop()
+
+
+	def test_misc(self):
+		root_endpoint = API_VERSION + '/'
+		rv, json = self.client.get(root_endpoint)
+		self.assertTrue(rv.status_code == 200)
 
 
 	def test_users(self):
@@ -109,7 +115,7 @@ class TestAPI(unittest.TestCase):
 
 
 if __name__ == "__main__":
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestAPI)
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestUsersAPI)
 	unittest.TextTestRunner(verbosity=2).run(suite)
 	COV.stop()
 	COV.report()
