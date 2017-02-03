@@ -9,6 +9,21 @@ class _Config(object):
 	SECRET_KEY = "CaptainGutt!"
 	GOOGLE_OAUTH2_CLIENT_ID = '1008302442818-1bmf9b3q0f8oaomban7dj9q4qlgalu35.apps.googleusercontent.com'
 	GOOGLE_OAUTH2_CLIENT_SECRET = 'MK_-nRMrx49vBjxLUM1_aKik'
+	OAUTH_CREDENTIALS = {
+	    'facebook': {
+	        'id': '1745285605788389',
+	        'secret': '1d7a5b8e59b055e3246fe7df879f7a1f'
+	    },
+	    'twitter': {
+	        'id': 'KUyS6cFjPQDcqh5U7rGWzHlsu',
+	        'secret': 'OehVKp8DkoMfXykLYQnsKyPrimaZVNBQ9ymEsIVkIsX0IbGaj4'
+	    },
+	    'google': {
+	        'id': '1008302442818-1bmf9b3q0f8oaomban7dj9q4qlgalu35.apps.googleusercontent.com',
+	        'secret': 'MK_-nRMrx49vBjxLUM1_aKik'
+	    }
+	}
+	
 	TESTING = False
 
 class _TestConfig(_Config):

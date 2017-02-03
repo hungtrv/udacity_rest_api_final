@@ -1,4 +1,5 @@
 import os
+from main.engines.oauth import OAuthSignIn
 
 from flask import g
 from flask import jsonify
@@ -96,29 +97,87 @@ def email_logout():
 	return {}
 
 
-@app.route('/google/login')
-def google_login():
-	flow = OAuth2WebServerFlow(
-			client_id=app.config['GOOGLE_OAUTH2_CLIENT_ID'],
-			client_secret=app.config['GOOGLE_OAUTH2_CLIENT_SECRET'],
-			scope='email',
-			redirect_uri = url_for('google_login', _external=True)
-		)
+# @app.route('/google/login')
+# def google_login():
+# 	flow = OAuth2WebServerFlow(
+# 			client_id=app.config['GOOGLE_OAUTH2_CLIENT_ID'],
+# 			client_secret=app.config['GOOGLE_OAUTH2_CLIENT_SECRET'],
+# 			scope='email',
+# 			redirect_uri = url_for('google_login', _external=True)
+# 		)
 	
-	if 'code' not in request.args:
-		auth_uri = flow.step1_get_authorize_url()
-		return redirect(auth_uri)
+# 	if 'code' not in request.args:
+# 		auth_uri = flow.step1_get_authorize_url()
+# 		return redirect(auth_uri)
 
-	elif 'code' in request.args:
-		auth_code = request.args.get('code')
-		credentials = flow.step2_exchange(auth_code)
-		http_auth = credentials.authorize(httplib2.Http())
-		plus_service = discovery.build('plus', 'v1', http_auth)
-		user = plus_service.people().get(userId='me').execute()
+# 	if 'code' in request.args:
+# 		auth_code = request.args.get('code')
+# 		credentials = flow.step2_exchange(auth_code)
+# 		http_auth = credentials.authorize(httplib2.Http())
+# 		plus_service = discovery.build('plus', 'v1', http_auth)
+# 		user = plus_service.people().get(userId='me').execute()
+# 		user_data = {
+# 			'username': user['emails'][0]['value'].split('@')[0],
+# 			'email': user['emails'][0]['value'],
+# 			'photo_url': user['image']['url'],
+# 			'password': os.urandom(24)
+# 		}
+
+# 		tmp_user = User.query.filter_by(username=user_data['username']).first()
+		
+# 		if tmp_user is None:
+# 			new_user = User()
+# 			new_user.import_data(user_data)
+# 			db.session.add(new_user)
+# 			db.session.commit()
+# 			tmp_user = new_user
+
+# 		return jsonify({'token': tmp_user.generate_auth_token()})
+	
+# 	response = jsonify({
+# 		'status': 401,
+# 		'error': 'access denied',
+# 		'message': 'user does not authorized access'
+#     })
+# 	response.status_code = 401
+
+# 	return response
+@app.route('/<provider>/login')
+def oauth_authorize(provider):
+	if provider not in app.config['OAUTH_CREDENTIALS']:
+		response = jsonify({
+			'status': 401,
+			'error': 'provider not found',
+			'message': '{0} is not supported'.format(provider)
+    	})
+		response.status_code = 401
+
+		return response
+
+	oauth = OAuthSignIn.get_provider(provider)
+	return oauth.authorize()
+
+
+@app.route('/<provider>/callback')
+def oauth_callback(provider):
+	if provider not in app.config['OAUTH_CREDENTIALS']:
+		response = jsonify({
+			'status': 401,
+			'error': 'provider not found',
+			'message': '{0} is not supported'.format(provider)
+    	})
+		response.status_code = 401
+
+		return response
+
+	oauth = OAuthSignIn.get_provider(provider)
+	social_id, username, email = oauth.callback()
+	
+	if username is not None:
 		user_data = {
-			'username': user['emails'][0]['value'].split('@')[0],
-			'email': user['emails'][0]['value'],
-			'photo_url': user['image']['url'],
+			'username': username,
+			'email': email,
+			'photo_url': '',
 			'password': os.urandom(24)
 		}
 
@@ -132,13 +191,13 @@ def google_login():
 			tmp_user = new_user
 
 		return jsonify({'token': tmp_user.generate_auth_token()})
+	
+	response = jsonify({
+		'status': 401,
+		'error': 'access denied',
+		'message': 'user does not authorized access'
+    })
+	response.status_code = 401
 
-	else:
-		response = jsonify({
-        	'status': 401,
-        	'error': 'access denied',
-        	'message': 'user does not authorized access'
-    	})
-    	response.status_code = 401
+	return response
 
-    	return response
