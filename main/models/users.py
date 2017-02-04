@@ -1,19 +1,20 @@
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from flask import url_for
 from main import db
 from main.errors import ValidationError
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from main.models.base import TimestampMixin
 
-
-class User(db.Model):
+class User(db.Model, TimestampMixin):
 	__tablename__ = 'users'
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(64), index=True)
 	password_hash = db.Column(db.String(128))
 	email = db.Column(db.String(128), index=True)
 	photo_url = db.Column(db.String(256), index=True)
+	requests = db.relationship('Request', backref='user', lazy='dynamic')
 
 
 	def set_password_hash(self, password):
