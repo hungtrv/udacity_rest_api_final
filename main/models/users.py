@@ -15,7 +15,7 @@ class User(db.Model, TimestampMixin):
 	email = db.Column(db.String(128), index=True)
 	photo_url = db.Column(db.String(256), index=True)
 	requests = db.relationship('Request', backref='user', lazy='dynamic')
-	proposals = db.releationship('Proposal', backref='user', lazy='dynamic')
+	proposals = db.relationship('Proposal', backref='user', lazy='dynamic')
 
 
 	def set_password_hash(self, password):
