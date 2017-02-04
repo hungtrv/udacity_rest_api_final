@@ -12,7 +12,7 @@ class Request(db.Model, TimestampMixin):
 	meal_time = db.Column(db.String(32), index=True)
 	latitude = db.Column(db.String(32))
 	longitude = db.Column(db.String(32))
-	filled = db.Column(db.Boolean)
+	filled = db.Column(db.Boolean, default=False)
 	proposals = db.relationship('Proposal', backref='request', lazy='dynamic')
 
 	def get_url(self):
@@ -24,9 +24,10 @@ class Request(db.Model, TimestampMixin):
 			'self_url': self.get_url(),
 			'user_url': self.user.get_url(),
 			'meal_type': self.meal_type,
+			'meal_time': self.meal_time,
 			'location_string': self.location_string,
 			'filled': self.filled,
-			'proposals_url': url_for('api.get_request_proposals', id=self.id, _external=True)
+			#'proposals_url': url_for('api.get_request_proposals', id=self.id, _external=True)
 		}
 
 	def import_data(self, data):
