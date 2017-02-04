@@ -1,4 +1,5 @@
 __all__ = [
 	'users',
-	'requests'
+	'requests',
+	'proposals'
 ]
