@@ -32,6 +32,7 @@ def add_request():
 	return {}, 201, {'Location': new_request.get_url()}
 
 @api.route('/requests/<int:id>', methods=['PUT'])
+@json
 def update_request(id):
 	tmp_request = Request.query.get_or_404(id)
 	if tmp_request.user != g.user:
