@@ -8,7 +8,7 @@ class Proposal(db.Model, TimestampMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	request_id = db.Column(db.Integer, db.ForeignKey('requests.id'), index=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	accepted = db.Column(db.Boolean)
+	accepted = db.Column(db.Boolean, default=False)
 
 
 	def get_url(self):
@@ -20,7 +20,7 @@ class Proposal(db.Model, TimestampMixin):
 			'self_url': self.get_url(),
 			'user_url': self.user.get_url(),
 			'request_url': self.request.get_url(),
-			'accepted': self.filled,
+			'accepted': self.accepted,
 		}
 
 

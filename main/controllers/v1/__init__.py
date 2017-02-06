@@ -1,7 +1,8 @@
 __all__ = [
 	'index',
 	'users',
-	'requests'
+	'requests',
+	'proposals'
 ]
 
 from flask import Blueprint
