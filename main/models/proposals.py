@@ -9,6 +9,7 @@ class Proposal(db.Model, TimestampMixin):
 	request_id = db.Column(db.Integer, db.ForeignKey('requests.id'), index=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 	accepted = db.Column(db.Boolean, default=False)
+	date = db.relationship('Date', backref='proposal', lazy='dynamic')
 
 
 	def get_url(self):
@@ -20,7 +21,8 @@ class Proposal(db.Model, TimestampMixin):
 			'self_url': self.get_url(),
 			'user_url': self.user.get_url(),
 			'request_url': self.request.get_url(),
-			'accepted': self.accepted,
+			'date_url': url_for('api.add_date', id=self.id, _external=True),
+			'accepted': self.accepted
 		}
 
 
