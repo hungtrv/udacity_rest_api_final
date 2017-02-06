@@ -17,8 +17,6 @@ from main import app
 from main import db
 from main.config import config
 from main.models.users import User
-from main.models.requests import Request
-from main.errors import ValidationError
 
 from test_client import TestClient
 
@@ -27,7 +25,7 @@ API_VERSION = '/v1'
 app.config.from_object(config)
 
 
-class TestUsersAPI(unittest.TestCase):
+class TestRequestsAPI(unittest.TestCase):
 	default_username = 'hungtrv'
 	default_password = '123456'
 
@@ -114,7 +112,7 @@ class TestUsersAPI(unittest.TestCase):
 
 
 if __name__ == "__main__":
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestUsersAPI)
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestRequestsAPI)
 	unittest.TextTestRunner(verbosity=2).run(suite)
 	COV.stop()
 	COV.report()
