@@ -15,6 +15,7 @@ class Request(db.Model, TimestampMixin):
 	filled = db.Column(db.Boolean, default=False)
 	proposals = db.relationship('Proposal', backref='request', lazy='dynamic')
 
+
 	def get_url(self):
 		return url_for('api.get_request', id=self.id, _external=True)
 
@@ -27,8 +28,9 @@ class Request(db.Model, TimestampMixin):
 			'meal_time': self.meal_time,
 			'location_string': self.location_string,
 			'filled': self.filled,
-			#'proposals_url': url_for('api.get_request_proposals', id=self.id, _external=True)
+			'proposals_url': url_for('api.get_request_proposals', id=self.id, _external=True)
 		}
+
 
 	def import_data(self, data):
 		try:
@@ -39,6 +41,7 @@ class Request(db.Model, TimestampMixin):
 			raise ValidationError('Invalid user: missing ' + e.args[0])
 
 		return self
+
 
 	def update_data(self, data):
 		fields = ['meal_type', 'location_string', 'meal_time', 'latitude', 'longitude', 'filled']
