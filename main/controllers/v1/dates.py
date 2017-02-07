@@ -10,6 +10,8 @@ from main.models.dates import Date
 from main.decorators import json
 from main.decorators import paginate
 
+from main.engines.restaurants import find_restaurant
+
 @api.route('/dates/', methods=['GET'])
 @json
 @paginate('dates')
@@ -35,9 +37,14 @@ def add_date(id):
 		}
 
 		return response, 401
-	# TODO: Get restaurant_name and restaurant_address from Google Maps and FourSquare APIs
-	restaurant_name = proposal.request.location_string
+	
+	restaurant_name = ''
 	restaurant_address = ''
+	restaurant = find_restaurant(proposal.request.meal_type, proposal.request.location_string)
+
+	if restaurant:
+		restaurant_name = restaurant['restaurant_name']
+		restaurant_address = restaurant['restaurant_address']
 
 	new_date = Date(
 		proposal=proposal,

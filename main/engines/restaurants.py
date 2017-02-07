@@ -8,7 +8,7 @@ def find_restaurant(meal_type, location_string):
 	gmaps_client_id = current_app.config['GOOGLE_MAPS_CLIENT_ID']
 	# gmaps_client_secret = current_app.config['GOOGLE_MAPS_CLIENT_SECRET']
 	gmaps = googlemaps.Client( 
-			client_id=gmaps_client_id
+			gmaps_client_id
 		)
 
 	geocode = gmaps.geocode(location_string)
