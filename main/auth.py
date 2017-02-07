@@ -3,9 +3,10 @@ from main.engines.oauth import OAuthSignIn
 
 from flask import g
 from flask import jsonify
-from flask import request
-from flask import url_for
-from flask import redirect
+# from flask import request
+# from flask import url_for
+# from flask import redirect
+
 
 from main import app
 from main import db
@@ -20,81 +21,86 @@ from main.decorators import rate_limit
 from main.decorators import no_cache
 from main.decorators import etag
 
-from oauth2client.client import OAuth2WebServerFlow
-from apiclient import discovery
-import httplib2
+# from oauth2client.client import OAuth2WebServerFlow
+# from apiclient import discovery
+# import httplib2
 
 """
 	auth: HTTP Authentication used with main app for login, logout, authentication token
 """
+
+
 @auth.verify_password
 def verify_password(username, password):
-	g.user = User.query.filter_by(username=username).first()
-	if g.user is None:
-		return False
+    g.user = User.query.filter_by(username=username).first()
+    if g.user is None:
+        return False
 
-	return g.user.verify_password(password)
+    return g.user.verify_password(password)
+
 
 @auth.error_handler
 @json
 def unauthorize():
-	response = {
-		'status': 401,
-		'error': 'unauthorized',
-		'message': 'please authenticate'
-	}
+    response = {
+        'status': 401,
+        'error': 'unauthorized',
+        'message': 'please authenticate'
+    }
 
-	return response, 401
+    return response, 401
 
 """
 	auth_token: HTTP Authentication used with API endpoints
 """
+
+
 @auth_token.verify_password
 def verify_auth_token(token, unused_password):
-	g.user = User.verify_auth_token(token)
+    g.user = User.verify_auth_token(token)
 
-	return g.user is not None
+    return g.user is not None
 
 
 @auth_token.error_handler
 @json
 def unauthorized_token():
-	response = {
-		'status': 401,
-		'error': 'unauthorized',
-		'message': 'please send your authentication token'
-	}
+    response = {
+        'status': 401,
+        'error': 'unauthorized',
+        'message': 'please send your authentication token'
+    }
 
-	return response, 401
+    return response, 401
 
 
 @api.before_request
 @auth_token.login_required
-@rate_limit(limit=5, period=15) # Only allow 5 requests within 15 seconds
+@rate_limit(limit=5, period=15)  # Only allow 5 requests within 15 seconds
 def before_request():
-	pass
+    pass
 
 
 @api.after_request
 @etag
 def after_request(rv):
-	return rv
+    return rv
 
 
 @app.route('/email/login')
 @auth.login_required
-@rate_limit(limit=1, period=600) # Only allow 1 call within 600 second
+@rate_limit(limit=1, period=600)  # Only allow 1 call within 600 second
 @no_cache
 @json
 def email_login():
-	return {'token': g.user.generate_auth_token()}
+    return {'token': g.user.generate_auth_token()}
 
 
 @app.route('/email/logout')
 @json
 def email_logout():
-	# Need to work on how to invalidate a token
-	return {}
+    # Need to work on how to invalidate a token
+    return {}
 
 
 # @app.route('/google/login')
@@ -105,7 +111,7 @@ def email_logout():
 # 			scope='email',
 # 			redirect_uri = url_for('google_login', _external=True)
 # 		)
-	
+
 # 	if 'code' not in request.args:
 # 		auth_uri = flow.step1_get_authorize_url()
 # 		return redirect(auth_uri)
@@ -124,7 +130,7 @@ def email_logout():
 # 		}
 
 # 		tmp_user = User.query.filter_by(username=user_data['username']).first()
-		
+
 # 		if tmp_user is None:
 # 			new_user = User()
 # 			new_user.import_data(user_data)
@@ -133,7 +139,7 @@ def email_logout():
 # 			tmp_user = new_user
 
 # 		return jsonify({'token': tmp_user.generate_auth_token()})
-	
+
 # 	response = jsonify({
 # 		'status': 401,
 # 		'error': 'access denied',
@@ -144,60 +150,59 @@ def email_logout():
 # 	return response
 @app.route('/<provider>/login')
 def oauth_authorize(provider):
-	if provider not in app.config['OAUTH_CREDENTIALS']:
-		response = jsonify({
-			'status': 401,
-			'error': 'provider not found',
-			'message': '{0} is not supported'.format(provider)
-    	})
-		response.status_code = 401
+    if provider not in app.config['OAUTH_CREDENTIALS']:
+        response = jsonify({
+            'status': 401,
+            'error': 'provider not found',
+            'message': '{0} is not supported'.format(provider)
+        })
+        response.status_code = 401
 
-		return response
+        return response
 
-	oauth = OAuthSignIn.get_provider(provider)
-	return oauth.authorize()
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
 
 
 @app.route('/<provider>/callback')
 def oauth_callback(provider):
-	if provider not in app.config['OAUTH_CREDENTIALS']:
-		response = jsonify({
-			'status': 401,
-			'error': 'provider not found',
-			'message': '{0} is not supported'.format(provider)
-    	})
-		response.status_code = 401
+    if provider not in app.config['OAUTH_CREDENTIALS']:
+        response = jsonify({
+            'status': 401,
+            'error': 'provider not found',
+            'message': '{0} is not supported'.format(provider)
+        })
+        response.status_code = 401
 
-		return response
+        return response
 
-	oauth = OAuthSignIn.get_provider(provider)
-	social_id, username, email = oauth.callback()
-	
-	if username is not None:
-		user_data = {
-			'username': username,
-			'email': email,
-			'photo_url': '',
-			'password': os.urandom(24)
-		}
+    oauth = OAuthSignIn.get_provider(provider)
+    social_id, username, email = oauth.callback()
 
-		tmp_user = User.query.filter_by(username=user_data['username']).first()
-		
-		if tmp_user is None:
-			new_user = User()
-			new_user.import_data(user_data)
-			db.session.add(new_user)
-			db.session.commit()
-			tmp_user = new_user
+    if username is not None:
+        user_data = {
+            'username': username,
+            'email': email,
+            'photo_url': '',
+            'password': os.urandom(24)
+        }
 
-		return jsonify({'token': tmp_user.generate_auth_token()})
-	
-	response = jsonify({
-		'status': 401,
-		'error': 'access denied',
-		'message': 'user does not authorized access'
+        tmp_user = User.query.filter_by(username=user_data['username']).first()
+
+        if tmp_user is None:
+            new_user = User()
+            new_user.import_data(user_data)
+            db.session.add(new_user)
+            db.session.commit()
+            tmp_user = new_user
+
+        return jsonify({'token': tmp_user.generate_auth_token()})
+
+    response = jsonify({
+        'status': 401,
+        'error': 'access denied',
+        'message': 'user does not authorized access'
     })
-	response.status_code = 401
+    response.status_code = 401
 
-	return response
-
+    return response

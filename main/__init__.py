@@ -37,4 +37,4 @@ app.register_blueprint(api, url_prefix='/v1')
 # Default Index
 @app.route('/')
 def index():
-	return "<h1>Welcome!</h1>"
+    return "<h1>Welcome!</h1>"

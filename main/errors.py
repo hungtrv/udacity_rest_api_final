@@ -13,11 +13,10 @@ def bad_request(e):
             Handling invalid data in POST/PUT requests
     """
     response = {
-            'status': 400, 
-            'error': 'bad request', 
-            'message': e.args[0]
-        }
-    
+        'status': 400,
+        'error': 'bad request',
+        'message': e.args[0]
+    }
 
     return response, 400
 
