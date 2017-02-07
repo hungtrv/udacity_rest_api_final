@@ -7,8 +7,11 @@ test_db_dir = os.path.join(base_dir, '../db/api_test_db.sqlite')
 class _Config(object):
 	SQLALCHEMY_DATABASE_URI = "sqlite:///" + db_dir
 	SECRET_KEY = "CaptainGutt!"
-	GOOGLE_OAUTH2_CLIENT_ID = '1008302442818-1bmf9b3q0f8oaomban7dj9q4qlgalu35.apps.googleusercontent.com'
-	GOOGLE_OAUTH2_CLIENT_SECRET = 'MK_-nRMrx49vBjxLUM1_aKik'
+	# GOOGLE_OAUTH2_CLIENT_ID = '1008302442818-1bmf9b3q0f8oaomban7dj9q4qlgalu35.apps.googleusercontent.com'
+	# GOOGLE_OAUTH2_CLIENT_SECRET = 'MK_-nRMrx49vBjxLUM1_aKik'
+	FOURSQUARE_CLIENT_ID = '3VT4KKV0OGPNF25PU5VF11PH3I4KPGGCCVNWYSZFRAGP2C3V'
+	FOURSQUARE_CLIENT_SECRET = 'UUSE4R5TZ01RBT43OT430N14YUHBMWCE2TZ5QSBTI1OXX3AB'
+	GOOGLE_MAPS_CLIENT_ID = 'AIzaSyATbjK6YjwjXT1ZfwZkQvlVZFV3a8qakC0'
 	OAUTH_CREDENTIALS = {
 	    'facebook': {
 	        'id': '1745285605788389',
@@ -23,7 +26,6 @@ class _Config(object):
 	        'secret': 'MK_-nRMrx49vBjxLUM1_aKik'
 	    }
 	}
-	
 	TESTING = False
 
 class _TestConfig(_Config):
